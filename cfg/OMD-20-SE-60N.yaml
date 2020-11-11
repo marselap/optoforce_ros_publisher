@@ -4,3 +4,4 @@ optoforce_node:
     fz_gain : 268
     speed: 1000
     filter: 0
+    n_sensors: 2
