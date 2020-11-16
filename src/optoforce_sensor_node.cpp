@@ -123,20 +123,20 @@ int main(int argc, char **argv)
 			ros::Rate loop_rate(speed);
 			//Main ROS loop
 
-			OptoPackage pack3D;
+			OptoPackage pack3D[n_sensors];
 			while(ros::ok())
 			{
 				ros::spinOnce();
 				for (int i = 0; i < n_sensors; i++)
 				{
-					daq.read(pack3D,i,false);
+					daq.read(pack3D[i],i,false);
 
 					geometry_msgs::WrenchStamped wrench_msg; // Create msg
 					//Fill msg
 					wrench_msg.header.stamp = ros::Time::now();
-					wrench_msg.wrench.force.x = pack3D.x;
-					wrench_msg.wrench.force.y = pack3D.y;
-					wrench_msg.wrench.force.z = pack3D.z;
+					wrench_msg.wrench.force.x = pack3D[i].x;
+					wrench_msg.wrench.force.y = pack3D[i].y;
+					wrench_msg.wrench.force.z = pack3D[i].z;
 					wrench_msg.wrench.torque.x = 0.0;
 					wrench_msg.wrench.torque.y = 0.0;
 					wrench_msg.wrench.torque.z = 0.0;
@@ -144,9 +144,9 @@ int main(int argc, char **argv)
 
 					if (sens_params_set[i]) {
 						wrench_msg.header.stamp = ros::Time::now();
-						wrench_msg.wrench.force.x = pack3D.x / fx_gain_3D[i];
-						wrench_msg.wrench.force.y = pack3D.y / fy_gain_3D[i];
-						wrench_msg.wrench.force.z = pack3D.z / fz_gain_3D[i];
+						wrench_msg.wrench.force.x = pack3D[i].x / fx_gain_3D[i];
+						wrench_msg.wrench.force.y = pack3D[i].y / fy_gain_3D[i];
+						wrench_msg.wrench.force.z = pack3D[i].z / fz_gain_3D[i];
 						wrench_msg.wrench.torque.x = 0.0;
 						wrench_msg.wrench.torque.y = 0.0;
 						wrench_msg.wrench.torque.z = 0.0;
