@@ -5,6 +5,20 @@
 #include <unistd.h>
 #include <string.h>
 
+
+#include <sstream>
+
+namespace patch
+{
+	template < typename T > std::string to_string( const T& n )
+	{
+		std::ostringstream stm ;
+		stm << n ;
+		return stm.str() ;
+	}
+}
+
+
 void msSleep(unsigned long p_uMillisecs)
 {
 	usleep(p_uMillisecs * 1000);
@@ -45,14 +59,26 @@ int main(int argc, char **argv)
 		ros::Publisher wrench_pub_raw[n_sensors];
 		ros::Publisher wrench_pub[n_sensors];
 
-		for(int i = 0; i < n_sensors; i++)
-		{
-			std::string topic_raw = "OptoForceWrench_raw_" + std::to_string(i);
-			std::string topic = "OptoForceWrench_" + std::to_string(i);
+		if (n_sensors == 1) {
+			std::string topic_raw = "OptoForceWrench_raw";
+			std::string topic = "OptoForceWrench";
 
-			wrench_pub_raw[i] = n.advertise<geometry_msgs::WrenchStamped>(topic_raw, 1000);
-			wrench_pub[i] = n.advertise<geometry_msgs::WrenchStamped>(topic, 1000);
+			wrench_pub_raw[0] = n.advertise<geometry_msgs::WrenchStamped>(topic_raw, 1000);
+			wrench_pub[0] = n.advertise<geometry_msgs::WrenchStamped>(topic, 1000);
+		}
+		else{
+			for(int i = 0; i < n_sensors; i++)
+			{
+				// std::string topic_raw = "OptoForceWrench_raw_" + std::to_string(i);
+				// std::string topic = "OptoForceWrench_" + std::to_string(i);
 
+				std::string topic_raw = "OptoForceWrench_raw_" + patch::to_string(i);
+				std::string topic = "OptoForceWrench_" + patch::to_string(i);
+
+				wrench_pub_raw[i] = n.advertise<geometry_msgs::WrenchStamped>(topic_raw, 1000);
+				wrench_pub[i] = n.advertise<geometry_msgs::WrenchStamped>(topic, 1000);
+
+			}
 		}
 
 		// get sensitivy gains from rosparam server
